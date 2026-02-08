@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PaynowQR Demo</title>
+    <script src="../dist/paynowqr.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #d1202f;
+            /* PayNow Red */
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 1rem;
+            background-color: #d1202f;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background-color: #a01824;
+        }
+
+        #qrcode {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .qr-output {
+            margin-top: 1rem;
+            font-family: monospace;
+            font-size: 0.8rem;
+            word-break: break-all;
+            background: #eee;
+            padding: 1rem;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>PayNow QR Demo</h1>
+        <div class="form-group">
+            <label for="uen">UEN</label>
+            <input type="text" id="uen" value="201403121W" placeholder="Enter UEN">
+        </div>
+        <div class="form-group">
+            <label for="amount">Amount (SGD)</label>
+            <input type="number" id="amount" value="50.50" step="0.01">
+        </div>
+        <div class="form-group">
+            <label for="company">Company Name</label>
+            <input type="text" id="company" value="ACME Pte Ltd.">
+        </div>
+        <div class="form-group">
+            <label for="refNumber">Reference Number</label>
+            <input type="text" id="refNumber" value="INV-12345">
+        </div>
+        <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+            <input type="checkbox" id="editable" style="width: auto;" checked>
+            <label for="editable" style="margin-bottom: 0;">Allow Amount Editing</label>
+        </div>
+        <div class="form-group">
+            <label for="expiry">Expiry Date (YYYYMMDD)</label>
+            <input type="text" id="expiry" value="" placeholder="Leave blank for default (5 years)">
+        </div>
+        <button onclick="generateQR()">Generate QR Code</button>
+
+        <div id="qrcode"></div>
+        <div id="qrstring" class="qr-output"></div>
+    </div>
+
+    <script>
+        function generateQR() {
+            const uen = document.getElementById('uen').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+            const company = document.getElementById('company').value;
+            const refNumber = document.getElementById('refNumber').value;
+            const editable = document.getElementById('editable').checked;
+            const expiry = document.getElementById('expiry').value;
+
+            const qrcode_instance = new PaynowQR({
+                uen: uen,
+                amount: amount,
+                company: company,
+                refNumber: refNumber,
+                editable: editable,
+                expiry: expiry || undefined
+            });
+
+            const qrString = qrcode_instance.output();
+            document.getElementById('qrstring').innerText = qrString;
+
+            // Clear previous QR code
+            document.getElementById('qrcode').innerHTML = '';
+
+            // Generate new QR code
+            new QRCode(document.getElementById("qrcode"), {
+                text: qrString,
+                width: 256,
+                height: 256,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        }
+
+        // Generate initial QR
+        generateQR();
+    </script>
+</body>
+
+</html>
